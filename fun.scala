@@ -1,10 +1,16 @@
 import com.quantifind.charts.Highcharts._
 
-def ptime[A](f: => A) = {
+def ptimeVal[A](f: => A):A = {
   val t0 = System.nanoTime
   val ans = f
   printf("Elapsed: %.9f sec\n",(System.nanoTime-t0)*1e-9)
   ans
+}
+
+def ptime[A](f: => A): Double = {
+  val t0 = System.nanoTime
+  val ans = f
+  (System.nanoTime-t0)*1e-9
 }
 
 def doit(l: List[Int]) = l.foldLeft((List[Int](), List[Int](), List[Int]())){ case ((a, b, c), x) =>
@@ -39,6 +45,10 @@ ptime(append(l1000000, List(1)))
 
 ptime(doit(l1000))
 
-val l = List(1000, 10000, 20000, 30000, 40000, 50000, 100000, 500000, 1000000)
+val l = List(1000, 10000, 20000, 30000, 40000) /*, 50000, 100000, 500000, 1000000*/)
+val p = l map { x => ptime(doit((1 to x).toList)) }
+val pFast = l map { x => ptime(doitFast((1 to x).toList)) }
 
-line(l, l map (ptime(doit(_))))
+line(l, p)
+hold
+line(l, pFast)
